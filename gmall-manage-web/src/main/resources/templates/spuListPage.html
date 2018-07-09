@@ -82,6 +82,9 @@
     function addSkuInfo() {
         var spuRow = $('#spulist_dg').datagrid('getSelected');
         var ctg3val=$("#ctg3ForSpuList").combobox('getValue');
+        if(spuRow.id==''){
+            console.log('请你先选择最下面的那个11再点好吗？');
+        }
         initSkuInfoDlg(spuRow.id,'',ctg3val);
     }
 

@@ -1,9 +1,6 @@
 package com.atguigu.gmall.bean;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
 
 public class SpuSaleAttrValue implements Serializable{
@@ -17,6 +14,16 @@ public class SpuSaleAttrValue implements Serializable{
     private String saleAttrId;
     @Column
     private String saleAttrValueName;
+    @Transient
+    private String isChecked;
+
+    public String getIsChecked() {
+        return isChecked;
+    }
+
+    public void setIsChecked(String isChecked) {
+        this.isChecked = isChecked;
+    }
 
     public String getId() {
         return id;

@@ -28,4 +28,10 @@ public interface ManageService{
     void saveSku(SkuInfo skuInfo);
 
     List<SkuInfo> skuInfoListBySpu(String spuId);
+
+    SkuInfo getSkuInfo(String skuId);
+
+    List<SpuSaleAttr> selectSpuSaleAttrListCkeckBySku(SkuInfo skuInfo);
+
+    List<SkuSaleAttrValue> selectSkuSaleAttrValue(String skuId);
 }
