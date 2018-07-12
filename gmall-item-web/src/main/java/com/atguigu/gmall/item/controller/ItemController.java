@@ -58,11 +58,11 @@ public class ItemController {
             }
         }
         // 将map 转换成json字符串
-        String valueJson = JSON.toJSONString(map);
+        String valuesSkuJson = JSON.toJSONString(map);
 
-        System.out.println("valueJson:="+valueJson);
+        System.out.println("valueJson:="+valuesSkuJson);
 
-        model.addAttribute("saleAttrList",saleAttrList);
+        model.addAttribute("valuesSkuJson",valuesSkuJson);
 
         return "item";
     }
