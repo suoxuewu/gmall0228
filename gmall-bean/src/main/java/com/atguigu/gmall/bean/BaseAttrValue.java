@@ -1,20 +1,28 @@
 package com.atguigu.gmall.bean;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
 
 public class BaseAttrValue implements Serializable {
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    public String id;
     @Column
-    private String valueName;
+    public String valueName;
     @Column
-    private String attrId;
+    public String attrId;
+
+    @Transient
+    private String urlParam;
+
+    public String getUrlParam() {
+        return urlParam;
+    }
+
+    public void setUrlParam(String urlParam) {
+        this.urlParam = urlParam;
+    }
 
     public String getId() {
         return id;

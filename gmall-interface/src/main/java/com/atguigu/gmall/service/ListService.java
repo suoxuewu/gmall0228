@@ -7,4 +7,5 @@ import com.atguigu.gmall.bean.SkuLsResult;
 public interface ListService {
     void saveSkulsInfo(SkuLsInfo skuLsInfo);
     public SkuLsResult search(SkuLsParams skuLsParams);
+    void incrHotScore(String skuId);
 }

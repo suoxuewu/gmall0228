@@ -34,4 +34,6 @@ public interface ManageService{
     List<SpuSaleAttr> selectSpuSaleAttrListCkeckBySku(SkuInfo skuInfo);
 
     List<SkuSaleAttrValue> selectSkuSaleAttrValue(String skuId);
+
+    List<BaseAttrInfo> getAttrList(List<String> attrValueIdList);
 }

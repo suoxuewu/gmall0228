@@ -47,7 +47,9 @@ public class SkuController {
     //$.post("/saveSku",skuInfo,function (data) {
     @RequestMapping(value="saveSku",method = RequestMethod.POST)
     @ResponseBody
-    public void saveSku(SkuInfo skuInfo) {
+    public String saveSku(SkuInfo skuInfo) {
         manageService.saveSku(skuInfo);
+        String skuId = skuInfo.getId();
+        return "redirect:/onSale?skuId="+skuId;
     }
 }

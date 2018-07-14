@@ -8,13 +8,13 @@ public class BaseAttrInfo implements Serializable {
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    public String id;
     @Column
-    private String attrName;
+    public String attrName;
     @Column
-    private String catalog3Id;
+    public String catalog3Id;
     @Transient
-    private List<BaseAttrValue> attrValueList;
+    public List<BaseAttrValue> attrValueList;
 
     public List<BaseAttrValue> getAttrValueList() {
         return attrValueList;

@@ -7,6 +7,7 @@ import com.atguigu.gmall.config.RedisUtil;
 import com.atguigu.gmall.manage.constant.ManageConst;
 import com.atguigu.gmall.manage.mapper.*;
 import com.atguigu.gmall.service.ManageService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import redis.clients.jedis.Jedis;
 
@@ -312,5 +313,14 @@ public class ManageServiceImpl implements ManageService{
         List<SkuSaleAttrValue> skuSaleAttrValueList =
                 skuSaleAttrValueMapper.selectSkuSaleAttrValue(skuId);
         return skuSaleAttrValueList;
+    }
+
+    @Override
+    public List<BaseAttrInfo> getAttrList(List<String> attrValueIdList) {
+       // 将集合id，进行分割 ["13","80","14","20","22","81","82","83","85","87"]
+        String valueId = StringUtils.join(attrValueIdList, ",");
+        System.out.println("分割后的自符串valueId="+valueId);
+        List<BaseAttrInfo> baseAttrInfos = baseAttrInfoMapper.selectAttrInfoListByIds(valueId);
+        return baseAttrInfos;
     }
 }

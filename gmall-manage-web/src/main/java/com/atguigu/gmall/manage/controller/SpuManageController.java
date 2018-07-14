@@ -34,5 +34,9 @@ public class SpuManageController {
     @ResponseBody
     public void saveSpuInfo(SpuInfo spuInfo) {
         manageService.saveSpuInfo(spuInfo);
+//        spuInfo.get
+//        return "redirect:/onSale?skuId="
     }
+    //return new ModelAndView
+    // ("redirect:/stock/downLoadFile.htmls?fileName="+newFileName+"&newFilePath="+newFilePath);
 }
