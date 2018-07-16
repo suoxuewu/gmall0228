@@ -96,7 +96,7 @@
             err_img2.src='img/img22.png';
         }else{
 //				    $("#loginForm").serialize() == 获取表单中的所有数据
-					alert($("#loginForm").serialize());
+	//				alert($("#loginForm").serialize());
             $.post("/login",$("#loginForm").serialize(),function (data) {
                 /*跟数据库进行匹配*/
                 if(data&&data!='fail'){

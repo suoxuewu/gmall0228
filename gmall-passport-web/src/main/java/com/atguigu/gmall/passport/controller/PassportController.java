@@ -63,7 +63,7 @@ public class PassportController {
 
         // 准备解密
         Map<String, Object> map = JwtUtil.decode(token, signKey, currentIp);
-
+        System.out.println("JwtUtils解密后的map"+map);
         if (map!=null){
             // 取得用户userId
             String userId = (String) map.get("userId");

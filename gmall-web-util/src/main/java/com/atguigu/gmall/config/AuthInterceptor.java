@@ -34,7 +34,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter{
         }
         // 用户登录之后，跳转其他页面，newToken可能不存在，第一次登录的时候，已经将newToken值放入cookie中
         if (token==null){
-            CookieUtil.getCookieValue(request,"token",false);
+            token = CookieUtil.getCookieValue(request,"token",false);
         }
         // 当token 不为空的时候，取出数据昵称，显示到页面上。
         if (token!=null){
@@ -79,6 +79,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter{
     private Map getUserMapByToken(String token) {
         // 分割token
         String tokenUserInfo  = StringUtils.substringBetween(token, ".");
+        System.out.println("分割后的tokenUserInfo"+tokenUserInfo);
         // 解码
         Base64UrlCodec base64UrlCodec = new Base64UrlCodec();
         byte[] decode = base64UrlCodec.decode(tokenUserInfo);
@@ -86,6 +87,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter{
         String userMap =null ;
         try {
             userMap = new String(decode,"UTF-8");
+            System.out.println("解码后的userMap"+userMap);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

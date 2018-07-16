@@ -105,11 +105,11 @@
 
 					<div class="imgbox">
 						<div class="probox">
-							<img class="img1" alt=""    src="/img/59ded626N7c4cb0a3.jpg">
+							<img class="img1" alt="" th:src="${skuInfo.skuDefaultImg}"  src="/img/59ded626N7c4cb0a3.jpg">
 							<div class="hoverbox"></div>
 						</div>
 						<div class="showbox">
-							<img class="img1" alt=""  src="/img/59ded626N7c4cb0a3.jpg">
+							<img class="img1" alt="" th:src="${skuInfo.skuDefaultImg}"  src="/img/59ded626N7c4cb0a3.jpg">
 						</div>
 					</div>
 
@@ -268,8 +268,8 @@
 						<div class="box-btns clear">
 							<div class="box-btns-one">
 								<form id="itemForm" action="http://cart.gmall.com/addToCart" method="post">
-								<input type="text" name="num" id="" value="1" />
-								<input type="hidden" name="skuId"   />
+								<input type="text" name="skuNum" id="" value="1" />
+								<input type="hidden" name="skuId" th:value="${skuInfo.id}"/>
 
 								<div class="box-btns-one1">
 
