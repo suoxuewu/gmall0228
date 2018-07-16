@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.atguigu.gmall.bean.SkuInfo;
 import com.atguigu.gmall.bean.SkuSaleAttrValue;
 import com.atguigu.gmall.bean.SpuSaleAttr;
+import com.atguigu.gmall.config.LoginRequire;
 import com.atguigu.gmall.service.ListService;
 import com.atguigu.gmall.service.ManageService;
 import org.springframework.stereotype.Controller;
@@ -23,7 +24,8 @@ public class ItemController {
     private ListService listService;
 
 
-
+    //查看详情页的时候用到,该控制器需要登录
+    @LoginRequire(autoRedirect = true)
     @RequestMapping(value = "/{skuId}.html")
     public String item(@PathVariable("skuId") String skuId, Model model) {
         System.out.println(skuId);

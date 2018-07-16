@@ -24,5 +24,6 @@ public interface UserInfoService {
     void  del(UserInfo userInfo);
 
 
-
+    UserInfo login(UserInfo userInfo);
+    public UserInfo verify(String userId);
 }
