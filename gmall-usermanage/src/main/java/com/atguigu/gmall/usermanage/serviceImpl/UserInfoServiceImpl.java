@@ -25,6 +25,9 @@ public class UserInfoServiceImpl implements UserInfoService {
     public String userKey_prefix = "user:";
     public String userInfoKey_suffix = ":info";
     public int userInfoKey_timeOut = 60*60;
+
+
+
     @Override
     public List<UserInfo> findAll() {
         return userInfoMapper.selectAll();

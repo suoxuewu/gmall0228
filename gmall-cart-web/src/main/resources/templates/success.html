@@ -25,7 +25,8 @@
 
         <ul class="hd_wrap_right">
         <li class="forel">
-        <a href="./javascript:;" class="link_login">你好,请登录</a>&nbsp;
+        <a href="./javascript:;" class="link_login">
+            <span th:if="${nickName}!=null" th:text="${nickName}">你好，请登录</span>你好,请登录</a>&nbsp;
     <a href="./javascript:;" class="link_regist">免费注册</a>
         </li>
         <li class="spacer"></li>

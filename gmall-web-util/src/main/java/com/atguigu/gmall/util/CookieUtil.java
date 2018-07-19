@@ -50,8 +50,8 @@ public class CookieUtil {
                 cookie.setMaxAge(cookieMaxage);
             if (null != request)// 设置域名的cookie
                 cookie.setDomain(getDomainName(request));
-            cookie.setPath("/");
-            response.addCookie(cookie);
+                cookie.setPath("/");
+                response.addCookie(cookie);
         } catch (Exception e) {
             e.printStackTrace();
         }

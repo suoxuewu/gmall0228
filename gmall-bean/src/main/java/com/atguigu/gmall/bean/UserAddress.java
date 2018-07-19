@@ -7,9 +7,6 @@ import javax.persistence.Id;
 import java.io.Serializable;
 
 public class UserAddress implements Serializable {
-
-    // 字段
-
     @Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

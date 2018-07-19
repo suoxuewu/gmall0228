@@ -11,9 +11,14 @@ public interface CartService {
 	如果没有该商品，则把对应商品插入到购物车中，同时插入缓存。
 1、	别忘记写mapper
 */
-    public void addToCart(String skuId,String userId,Integer skuNum);
-    public List<CartInfo> loadCartCache(String useId);
-    public List<CartInfo> getCartList(String userId);
+    // 添加购物车
+    void  addToCart(String skuId,String userId,Integer skuNum);
+    // 根据用户id查询购物车
+    List<CartInfo> getCartList(String userId);
+    // 合并购物车
+    List<CartInfo> mergeToCartList(List<CartInfo> cartListFromCookie, String userId);
 
-    List<CartInfo> mergerToCartList(List<CartInfo> cartListFromCookie, String userId);
+    void checkCart(String skuId, String isChecked, String userId);
+
+    List<CartInfo> getCartCheckedList(String userId);
 }

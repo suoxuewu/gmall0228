@@ -45,7 +45,7 @@ public class PassportController {
                 map.put("userId",info.getId());
                 map.put("nickName",info.getNickName());
                 String toekn = JwtUtil.encode(signKey, map, ip);
-                System.out.println("token="+toekn);
+               // System.out.println("token="+toekn);
                 return  toekn;
             }
         }
@@ -63,7 +63,7 @@ public class PassportController {
 
         // 准备解密
         Map<String, Object> map = JwtUtil.decode(token, signKey, currentIp);
-        System.out.println("JwtUtils解密后的map"+map);
+        //System.out.println("JwtUtils解密后的map"+map);
         if (map!=null){
             // 取得用户userId
             String userId = (String) map.get("userId");

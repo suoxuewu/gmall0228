@@ -62,4 +62,15 @@ public class CartCookieHandler {
     public void deleteCartCookie(HttpServletRequest request, HttpServletResponse response) {
         CookieUtil.deleteCookie(request,response,cookieCartName);
     }
+
+    public void checkCart(HttpServletRequest request, HttpServletResponse response, String skuId, String isChecked) {
+        List<CartInfo> cartList = getCartList(request);
+        for (CartInfo cartInfo : cartList) {
+            if(cartInfo.getSkuId().equals(skuId)){
+                cartInfo.setIsChecked(isChecked);
+            }
+        }
+        String jsonString = JSON.toJSONString(cartList);
+        CookieUtil.setCookie(request,response,cookieCartName,jsonString,COOKIE_CART_MAXAGE,true);
+    }
 }

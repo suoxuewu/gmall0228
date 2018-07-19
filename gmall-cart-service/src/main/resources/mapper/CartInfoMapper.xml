@@ -3,7 +3,7 @@
 <mapper namespace="com.atguigu.gmall.cart.mapper.CartInfoMapper">
     <resultMap id="cartInfoMap" type="com.atguigu.gmall.bean.CartInfo" autoMapping="true">
         <id column="id" property="id"></id>
-        <result column="skuPrice"  property="price"></result>
+        <result column="price"  property="skuPrice"></result>
     </resultMap>
     <!-- List<CartInfo> cartInfoListDB = cartInfoMapper.selectCartListWithCarPrice(userId);-->
     <select id="selectCartListWithCarPrice" resultMap="cartInfoMap">

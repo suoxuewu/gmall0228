@@ -23,7 +23,8 @@
 
             </ul>
             <ul class="header-right">
-                <li><a href="../登录页面\index.html" style="color: red;">你好，请登录</a></li>
+                <li><a href="../登录页面\index.html" style="color: red;">
+                    <span th:if="${nickName}!=null" th:text="${nickName}">你好，请登录</span>你好，请登录</a></li>
                 <li><a href="../注册页面\index.html" >免费注册</a></li>
                 <li class="spacer"></li>
                 <li><a href="">我的订单</a></li>
@@ -52,7 +53,7 @@
                 <input type="button" value="搜索" class="one_right_btn">
             </div>
         </div>
-        <div class="one_search_load"    >
+        <div class="one_search_load"   th:if="${userId}==null" >
             <img src="./img/shop_07.jpg" class="one_load_wraing">
             <span>您还没有登录！登录后购物车的商品将保存到您账号中</span>
             <a href="#"><input type="button" onclick="login()" value="立即登录" class="one_load_btn"></a>
@@ -85,7 +86,10 @@
                     <div> </div>
                     <div>
                         <ol>
-                            <li><input type="checkbox"   class="check"   onchange="checkSku(this)"  /></li>
+                            <li><input type="checkbox"  class="check"
+                                th:value="${cartInfo.skuId}"
+                                th:checked="${cartInfo.isChecked}==1?'true':'false'"
+                                       onchange="checkSku(this)"  /></li>
                             <li>
                                 <dt><img th:src="${cartInfo.imgUrl}"  src="img\shop1.jpg" alt=""></dt>
                                 <dd th:onclick="'toItem('+${cartInfo.skuId}+')'" onclick="toItem(1)">
@@ -134,7 +138,6 @@
             <div>
                 <ol>
                     <li>总价:<span style="color:#e64346;font-weight:bold;font-size:16px;" class="fnt">￥0.00</span>  </li>
-
                 </ol>
             </div>
             <div><button  onclick="toTrade()" type="button">去结算</button></div>
@@ -605,8 +608,6 @@
         console.log("计算总价");
         var zzj=0;
         $(".check").each(function () {
-
-
             if($(this).prop("checked")){
                 console.log("check!!"+ $(this).parents("ol").find(".zj").html());
                 var zj = $(this).parents("ol").find(".zj").html().substring(1);

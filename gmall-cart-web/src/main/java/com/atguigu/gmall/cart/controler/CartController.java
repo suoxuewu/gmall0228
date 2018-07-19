@@ -1,10 +1,12 @@
 package com.atguigu.gmall.cart.controler;
+
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.atguigu.gmall.bean.CartInfo;
 import com.atguigu.gmall.bean.SkuInfo;
 import com.atguigu.gmall.config.LoginRequire;
 import com.atguigu.gmall.service.CartService;
 import com.atguigu.gmall.service.ManageService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,8 +22,37 @@ public class CartController {
         private CartService cartService;
        @Reference
         ManageService manageService;
-       @Reference
+        @Autowired
         CartCookieHandler cartCookieHandler;
+
+        @RequestMapping(value="toTrade")
+        @LoginRequire(autoRedirect = true)
+        public String toTrade(HttpServletRequest request,HttpServletResponse response){
+            String userId = (String) request.getAttribute("userId");
+            List<CartInfo> cartCookieHandlercartList = cartCookieHandler.getCartList(request);
+            if(cartCookieHandlercartList!=null&&cartCookieHandlercartList.size()>0){
+                List<CartInfo> cartInfoList = cartService.mergeToCartList(cartCookieHandlercartList, userId);
+                cartCookieHandler.deleteCartCookie(request, response);
+            }
+            return "redirect://order.gmall.com/trade";
+        }
+
+        //同样这里要区分，用户登录和未登录状态。
+    //如果登录，修改缓存中的数据，如果未登录，修改cookie中的数据。
+
+        @RequestMapping(value="checkCart",method = RequestMethod.POST)
+        @LoginRequire(autoRedirect = false)
+        public void checkCart(HttpServletRequest request,HttpServletResponse response){
+            String skuId = request.getParameter("skuId");
+            String isChecked = request.getParameter("isChecked");
+            String userId = (String) request.getAttribute("userId");
+            if(userId!=null){
+                cartService.checkCart(skuId,isChecked,userId);
+            }else{
+                cartCookieHandler.checkCart(request,response,skuId,isChecked);
+            }
+        }
+
 
         @RequestMapping(value = "cartList")
         @LoginRequire(autoRedirect = false)
@@ -34,9 +65,11 @@ public class CartController {
             if(userId!=null){
                 if(cartListFromCookie!=null&&cartListFromCookie.size()>0){
                     //合并购物车
-                    cartList = cartService.mergerToCartList(cartListFromCookie,userId);
+                    cartList= cartService.mergeToCartList(cartListFromCookie,userId);
                     //删除cookie
                     cartCookieHandler.deleteCartCookie(request,response);
+                }else{
+                    cartList = cartService.getCartList(userId);
                 }
                 model.addAttribute("cartList",cartList);
             }else {
