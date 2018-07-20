@@ -36,6 +36,16 @@ public class PaymentController {
     @Reference
     PaymentService paymentService;
     //return "redirect://payment.gmall.com/index?orderId="+orderInfo.getId();
+
+
+    @RequestMapping(value = "sendPaymentResult")
+    @ResponseBody
+    public String sendPaymentResult(PaymentInfo paymentInfo,@RequestParam("result")String result){
+        paymentService.sendPaymentResult(paymentInfo,result);
+        return "sent payment result";
+    }
+
+
     @RequestMapping(value = "index")
     @LoginRequire
     public String index(HttpServletRequest request, Model model){
@@ -128,6 +138,8 @@ public class PaymentController {
                 // 设置内容
                 paymentInfoUpd.setCallbackContent(paramsMap.toString());
                 paymentService.updataPaymentInfo(paymentInfoUpd,out_trade_no);
+                //修改订单状态
+                paymentService.sendPaymentResult(paymentInfoUpd,"success");
                 return "success";
             }
         }
