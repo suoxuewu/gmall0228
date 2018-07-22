@@ -1,4 +1,5 @@
 package com.atguigu.gmall.order.serviceImpl;
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.atguigu.gmall.bean.OrderDetail;
@@ -9,13 +10,18 @@ import com.atguigu.gmall.enums.ProcessStatus;
 import com.atguigu.gmall.order.mapper.OrderDetailMapper;
 import com.atguigu.gmall.order.mapper.OrderInfoMapper;
 import com.atguigu.gmall.service.OrderService;
+import com.atguigu.gmall.service.PaymentService;
 import com.atguigu.gmall.util.HttpClientUtil;
 import org.apache.activemq.command.ActiveMQTextMessage;
+import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import redis.clients.jedis.Jedis;
+import tk.mybatis.mapper.entity.Example;
 
 import javax.jms.*;
 import javax.jms.Queue;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 @Service
@@ -28,8 +34,8 @@ public class OrderServiceImpl implements OrderService{
     private RedisUtil redisUtil;
     @Autowired
     private ActiveMQUtil activeMQUtil;
-
-
+    @Reference
+    PaymentService paymentService;
 
     @Override
     //@Transactional
@@ -65,6 +71,17 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
+    //扫描过期的订单
+    public List<OrderInfo> getExpireOrderList() {
+        //没有过期，expireTime《当前时间
+        Example example = new Example(OrderInfo.class);
+        example.createCriteria().andLessThan("expireTime",new Date())
+                .andEqualTo("processStatus",ProcessStatus.UNPAID);
+        List<OrderInfo> orderInfos = orderInfoMapper.selectByExample(example);
+        return orderInfos;
+    }
+
+    @Override
     public void updateOrderStatus(String orderId, ProcessStatus paid) {
         OrderInfo orderInfo = new OrderInfo();
         orderInfo.setId(orderId);
@@ -77,15 +94,17 @@ public class OrderServiceImpl implements OrderService{
     public void sendOrderStatus(String orderId) {
         //先发送消息队列,封装仓库需要的数据
         Connection connection = activeMQUtil.getConnection();
-        Session session = null;
         String orderJson = initWareOrder(orderId);
         try {
-            session = connection.createSession(true, Session.SESSION_TRANSACTED);
+            Session session = connection.createSession(true, Session.SESSION_TRANSACTED);
            Queue order_result_queue =  session.createQueue("ORDER_RESULT_QUEUE");
            MessageProducer producer =  session.createProducer(order_result_queue);
             ActiveMQTextMessage activeMQTextMessage = new ActiveMQTextMessage();
             activeMQTextMessage.setText(orderJson);
             producer.send(activeMQTextMessage);
+            //没提交，session.commit();session.commit();session.commit();sesssion.commit();session.commit();
+            //session.commit();session.commit();sesssion.commit();session.commit();session.commit()session.commit();
+            session.commit();
             producer.close();
             session.close();
             connection.close();
@@ -95,13 +114,21 @@ public class OrderServiceImpl implements OrderService{
 
     }
 
+    @Override
+    //处理没有完成的订单
+    @Async
+    public void execExpireOrder(OrderInfo orderInfo) {
+        updateOrderStatus(orderInfo.getId(),ProcessStatus.CLOSED);
+        paymentService.closePayment(orderInfo.getId());
+    }
+
     private String initWareOrder(String orderId) {
         OrderInfo orderInfo = getOrderInfo(orderId);
         Map map =  initWareOrder(orderInfo);
         return JSON.toJSONString(map);
     }
 
-    private Map initWareOrder(OrderInfo orderInfo) {
+    public Map initWareOrder(OrderInfo orderInfo) {
         //这个方法用来拼接字符串,初始化仓库信息
         Map map = new HashMap();
         map.put("orderId",orderInfo.getId());
@@ -125,6 +152,44 @@ public class OrderServiceImpl implements OrderService{
         }
         map.put("details",arrayList);
         return map;
+    }
+
+    @Override
+    public List<OrderInfo> orderSplit(String orderId, String wareSkuMap) throws InvocationTargetException, IllegalAccessException {
+        List<OrderInfo> subOrderInfoList = new ArrayList<>();
+        //获取原始的订单
+        OrderInfo orderInfoOrigin = getOrderInfo(orderId);
+        List<Map> maps = JSON.parseArray(wareSkuMap, Map.class);
+        for (Map map : maps) {
+            String wareId = (String) map.get("wareId");
+            List<String> skuIds = (List<String>) map.get("skuIds");
+            //设置字订单
+            OrderInfo subOrderInfo = new OrderInfo();
+            //属性拷贝主键自增，一定放在设置id为null的前面
+                BeanUtils.copyProperties(subOrderInfo,orderInfoOrigin);
+                subOrderInfo.setId(null);
+                subOrderInfo.setParentOrderId(orderId);
+                //字订单的detailList
+                List<OrderDetail> orderDetailList = orderInfoOrigin.getOrderDetailList();
+                //创建新的子订单集合
+                List<OrderDetail> subOrderDetailList = new ArrayList<>();
+                for (OrderDetail orderDetail : orderDetailList) {
+                    for (String skuId : skuIds) {
+                        if(skuId.equals(orderDetail.getSkuId())){
+                            orderDetail.setId(null);
+                            subOrderDetailList.add(orderDetail);
+                        }
+                    }
+                }
+            subOrderInfo.setOrderDetailList(subOrderDetailList);
+            //计算一下总钱数
+            subOrderInfo.getTotalAmount();
+            //保存到数据库
+            saveOrder(subOrderInfo);
+            subOrderInfoList.add(subOrderInfo);
+        }
+        updateOrderStatus(orderId,ProcessStatus.SPLIT);
+        return subOrderInfoList;
     }
 
 

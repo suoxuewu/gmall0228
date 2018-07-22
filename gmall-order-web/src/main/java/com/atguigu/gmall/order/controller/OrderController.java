@@ -1,6 +1,7 @@
 package com.atguigu.gmall.order.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.fastjson.JSON;
 import com.atguigu.gmall.bean.CartInfo;
 import com.atguigu.gmall.bean.OrderDetail;
 import com.atguigu.gmall.bean.OrderInfo;
@@ -15,10 +16,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class OrderController {
@@ -33,6 +37,33 @@ public class OrderController {
 
    @Reference
    private OrderService orderService;
+
+   @RequestMapping(value="orderSplit",method = RequestMethod.POST)
+   @ResponseBody
+   public String orderSplit(HttpServletRequest request){
+       //根据orderId，进行拆单
+       String orderId = request.getParameter("orderId");
+       // 返回的Json数据[{"wareId":"1","skuIds":["2","10"]},{"wareId":"2","skuIds":["3"]}]
+       //[{"wareId":"1","skuId":["2","2"]},{}]
+       String wareSkuMap = request.getParameter("wareSkuMap");
+       //根据orderId进行拆单
+       List<OrderInfo> orderInfo = null;
+       try {
+           orderInfo = orderService.orderSplit(orderId,wareSkuMap);
+       } catch (InvocationTargetException e) {
+           e.printStackTrace();
+       } catch (IllegalAccessException e) {
+           e.printStackTrace();
+       }
+       List<Map> orderDeatilList = new ArrayList<>();
+       for (OrderInfo info : orderInfo) {
+           //从订单中获取字订单
+          Map map =  orderService.initWareOrder(info);
+          orderDeatilList.add(map);
+       }
+       return JSON.toJSONString(orderDeatilList);
+   }
+
 
     //表单提交submitOrder
     @RequestMapping(value = "submitOrder",method = RequestMethod.POST)

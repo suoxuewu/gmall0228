@@ -37,6 +37,17 @@ public class PaymentController {
     PaymentService paymentService;
     //return "redirect://payment.gmall.com/index?orderId="+orderInfo.getId();
 
+    @RequestMapping(value="queryPaymentResult")
+    @ResponseBody
+    public String queryPaymentResult(HttpServletRequest request){
+        //先获取订单编号
+        String orderId = request.getParameter("orderId");
+        PaymentInfo paymentInfo = new PaymentInfo();
+        paymentInfo.setOrderId(orderId);
+        PaymentInfo info = paymentService.getpaymentInfo(paymentInfo);
+        boolean b = paymentService.checkPayment(info);
+        return "result="+b;
+    }
 
     @RequestMapping(value = "sendPaymentResult")
     @ResponseBody
@@ -98,6 +109,7 @@ public class PaymentController {
             e.printStackTrace();
         }
         response.setContentType("text/html;charset=UTF-8");
+        paymentService.sendDelayPaymentResult(paymentInfo.getOutTradeNo(),14,4);
         return form;
     }
     //同步回调
